@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Multimedia Portfolio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Base Body Background with initial Gradient Overlay and Default Image */
+        body {
+            background-image: linear-gradient(135deg, rgba(230, 242, 255, 0.85) 0%, rgba(255, 240, 245, 0.85) 100%), 
+                              url('https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #333;
+            transition: background-image 0.5s ease-in-out;
+            padding-bottom: 80px;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 1.5rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #0076FF;
+        }
+
+        /* Header Title */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 1.5rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            color: #222;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Filter Controls */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #222;
+            color: #fff;
+            border-color: #222;
+        }
+
+        /* Main Portfolio Container */
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid #333;
+            padding-left: 10px;
+        }
+
+        /* Video Section Grid */
+        .grid-videos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 500px) {
+            .grid-videos {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Responsive Iframe Wrapper (16:9 Aspect Ratio) */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-info {
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            color: #444;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        /* Photo Gallery Layout (Masonry-like Columns) */
+        .photo-gallery {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .photo-gallery { column-count: 2; }
+        }
+        @media (max-width: 600px) {
+            .photo-gallery { column-count: 1; }
+        }
+
+        .photo-item {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.02);
+        }
+
+        .photo-item img {
+            width: 100%;
+            display: block;
+            height: auto;
+        }
+
+        /* Background Switcher Floating Control Panel */
+        .bg-switcher-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-width: 250px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .bg-switcher-panel p {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: right;
+            margin-bottom: 5px;
+        }
+
+        .bg-switcher-panel h3 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #222;
+        }
+
+        .bg-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bg-thumb {
+            width: 80px;
+            height: 50px;
+            border-radius: 4px;
+            cursor: pointer;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .bg-thumb:hover, .bg-thumb.active {
+            border-color: #0076FF;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #666;
+            background: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Section -->
+    <nav>
+        <a href="#about">About</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <!-- Main Title Header -->
+    <header id="about">
+        <h1>MY WORK</h1>
+    </header>
+
+    <!-- Content Filter Category Tabs -->
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterContent('all', this)">All</button>
+        <button class="filter-btn" onclick="filterContent('videos', this)">Videos</button>
+        <button class="filter-btn" onclick="filterContent('photos', this)">Photos</button>
+    </div>
+
+    <!-- Main Portfolio Gallery Grid Space -->
+    <div class="portfolio-container" id="gallery">
+        
+        <!-- VIDEOS CATEGORY SEGMENT -->
+        <div class="portfolio-section" id="sec-videos">
+            <h2 class="section-title">Videos</h2>
+            <div class="grid-videos">
+                <!-- Video Card 1 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <!-- Masukkan Embed Link Video Youtube / Vimeo / dll di tag src ini -->
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">PROJECT: FOREST EXPLORATION</div>
+                </div>
+
+                <!-- Video Card 2 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">COMMERCIAL: URBAN BEATS</div>
+                </div>
+
+                <!-- Video Card 3 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">DOCUMENTARY: ARTISAN LIVES</div>
+                </div>
+
+                <!-- Video Card 4 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">MUSIC VIDEO: DREAMSCAPE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHOTOS CATEGORY SEGMENT -->
+        <div class="portfolio-section" id="sec-photos">
+            <h2 class="section-title">Photos</h2>
+            <div class="photo-gallery">
+                <!-- Photo Item 1 -->
+                <div class="photo-item">
+                    <!-- Kamu bisa mengganti URL di src dengan file foto lokal kamu, misal src="foto1.jpg" -->
+                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80" alt="Camera Layout">
+                </div>
+                <!-- Photo Item 2 -->
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Portrait Photography">
+                </div>
+                <!-- Photo Item 3 -->
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=600&q=80" alt="Abstract Art Texture">
+                </div>
+                <!-- Photo Item 4 -->
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80" alt="Nature Landscape">
+                </div>
+                <!-- Photo Item 5 -->
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1495707902641-75cac588d2e9?auto=format&fit=crop&w=600&q=80" alt="Vintage Camera">
+                </div>
+                <!-- Photo Item 6 -->
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Ocean Coastline">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BACKGROUND SWITCHER PANEL CONTAINER -->
+    <div class="bg-switcher-panel">
+        <p>Click to switch background</p>
+        <h3>Change Background</h3>
+        <div class="bg-options">
+            <!-- Pilihan Background 1 -->
+            <img class="bg-thumb active" 
+                 src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=200&q=80" 
+                 data-full="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1920&q=80"
+                 data-gradient="linear-gradient(135deg, rgba(230, 242, 255, 0.85) 0%, rgba(255, 240, 245, 0.85) 100%)"
+                 onclick="changeBackground(this)">
+            
+            <!-- Pilihan Background 2 -->
+            <img class="bg-thumb" 
+                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" 
+                 data-full="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1920&q=80"
+                 data-gradient="linear-gradient(135deg, rgba(240, 240, 240, 0.85) 0%, rgba(200, 215, 230, 0.9) 100%)"
+                 onclick="changeBackground(this)">
+        </div>
+    </div>
+
+    <footer id="contact">
+        <p>[USER NAME] &copy; 2026 | Portfolio Visual Kreatif</p>
+    </footer>
+
+    <!-- INTERACTION LOGIC JAVASCRIPT -->
+    <script>
+        // Fungsi untuk mengganti background gambar + gradasi secara dinamis
+        function changeBackground(element) {
+            // Hapus kelas active dari thumbnail sebelumnya
+            document.querySelectorAll('.bg-thumb').forEach(thumb => thumb.classList.remove('active'));
+            // Tambahkan kelas active ke thumbnail yang dipilih
+            element.classList.add('active');
+
+            const fullImageUrl = element.getAttribute('data-full');
+            const gradientString = element.getAttribute('data-gradient');
+
+            // Set gabungan gradasi overlay dan gambar latar belakang baru
+            document.body.style.backgroundImage = `${gradientString}, url('${fullImageUrl}')`;
+        }
+
+        // Fungsi untuk memfilter content (All / Videos / Photos)
+        function filterContent(category, buttonElement) {
+            // Perbarui status tombol aktif
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            const videoSection = document.getElementById('sec-videos');
+            const photoSection = document.getElementById('sec-photos');
+
+            if (category === 'all') {
+                videoSection.style.display = 'block';
+                photoSection.style.display = 'block';
+            } else if (category === 'videos') {
+                videoSection.style.display = 'block';
+                photoSection.style.display = 'none';
+            } else if (category === 'photos') {
+                videoSection.style.display = 'none';
+                photoSection.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
